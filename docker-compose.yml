@@ -1,0 +1,43 @@
+version: "3"
+services:
+  server:
+    image: server:latest
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    restart: always
+    deploy:
+      replicas: 1
+      mode: replicated
+    environment:
+      - PORT=8000
+
+  client:
+    image: client:latest
+    environment:
+      - API_URL=http://server:8000
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    deploy:
+      replicas: 1
+      mode: replicated
+    restart: always
+    # ports:
+    #   - "3000:80"
+
+  revese-proxy:
+    image: nginx:latest
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    ports: 
+      - "3000:80"
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  my_network:
