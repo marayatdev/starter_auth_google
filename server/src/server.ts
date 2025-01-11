@@ -7,6 +7,9 @@ import morgan from "morgan";
 import fs from "fs";
 import path from "path";
 import prisma from "./config/prisma";
+import passport from "passport"; // Import Passport
+import session from "express-session"; // For session handling
+import "./config/passport"; // Import Passport configuration
 
 dotenv.config();
 
@@ -24,12 +27,26 @@ class App {
 
   private setup(): void {
     this.configureMiddleware();
+    this.initializePassport(); // Initialize Passport
   }
 
   private configureMiddleware(): void {
     this.app.use(morgan("dev"));
     this.app.use(cors());
     this.app.use(bodyParser.json());
+    this.app.use(bodyParser.urlencoded({ extended: true }));
+    this.app.use(
+      session({
+        secret: process.env.SESSION_SECRET || "default_secret",
+        resave: false,
+        saveUninitialized: false,
+      })
+    );
+  }
+
+  private initializePassport(): void {
+    this.app.use(passport.initialize());
+    this.app.use(passport.session()); // If you're using sessions
   }
 
   private async initializeRoutes(): Promise<void> {
@@ -44,25 +61,28 @@ class App {
 
         if (stats.isDirectory()) {
           await loadRoutes(fullPath);
-        } else if (stats.isFile()) {
-          // Check for .js files instead of .ts files in the build version
-          if (file.endsWith(".js")) {
-            try {
-              const routeModule = await import(fullPath);
-              if (routeModule.default) {
-                const route = fullPath
-                  .replace(routePath, "")
-                  .replace(/\\/g, "/")
-                  .replace(/\.js$/, ""); // Make sure to strip .js in the final path
-                this.app.use(`/api${route}`, routeModule.default);
-                this.app.use(
-                  "/api/media",
-                  express.static(path.join(__dirname, "./uploads/"))
-                );
-              }
-            } catch (error) {
-              logError(`Error loading route module ${file}: ${error}`);
+        } else if (
+          stats.isFile() &&
+          (file.endsWith(".js") || file.endsWith(".ts"))
+        ) {
+          try {
+            const routeModule = await import(fullPath.replace(".js", ".ts"));
+
+            if (routeModule.default) {
+              const route = fullPath
+                .replace(routePath, "")
+                .replace(/\\/g, "/")
+                .replace(/\.ts$/, "")
+                .replace(/\.js$/, "");
+
+              this.app.use(`/api${route}`, routeModule.default);
+              this.app.use(
+                "/api/media",
+                express.static(path.join(__dirname, "./uploads/"))
+              );
             }
+          } catch (error) {
+            logError(`Error loading route module ${file}: ${error}`);
           }
         }
       }

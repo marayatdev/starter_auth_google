@@ -1,6 +1,7 @@
-export class Register {
-    id?: number;
-    username?: string;
-    email?: string;
-    password?: string;
+export class User {
+  id?: number;
+  googleId?: string;
+  email?: string;
+  name?: string;
+  profilePicture?: string;
 }
