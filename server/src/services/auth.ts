@@ -9,10 +9,6 @@ export class AuthService {
   public async findOrCreateUser(googleProfile: any): Promise<User> {
     const { id, displayName, emails, photos } = googleProfile;
 
-    console.log(photos);
-
-    console.log(photos[0]?.value);
-
     const email = emails[0]?.value;
 
     if (!email) {

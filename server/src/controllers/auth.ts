@@ -31,10 +31,16 @@ export class AuthController {
 
       // Generate a JWT token
       const token = jwt.sign(
-        { id: user.id, email: user.email },
+        { id: user.id, email: user.email, role: user.role },
         this.jwtSecret,
         { expiresIn: "1h" }
       );
+
+      res.cookie("token", token, {
+        httpOnly: true, // Prevents JavaScript from accessing the cookie
+        secure: process.env.NODE_ENV === "production", // Only use cookies over HTTPS in production
+        maxAge: 3600000, // 1 hour expiration
+      });
 
       res.json({ message: "Authentication successful", token });
     })(req, res, next);

@@ -12,13 +12,15 @@ import {
   Stack,
 } from "@mantine/core";
 import { GoogleButton } from "../LogoSignIn/GoogleButton";
-import { TwitterButton } from "../LogoSignIn/TwitterButton";
 import { login, register } from "../../../services/Auth/auth";
 import { useNavigate } from "react-router-dom";
 import type { Login, Register } from "../../../interfaces/Auth/auth";
 import { jwtDecode } from "jwt-decode";
+import axios from "axios";
+import { GoogleLogin } from "react-google-login";
 
 export function Login() {
+  const client_api = import.meta.env.VITE_GOOGLE_CLIENT_ID;
   const navigate = useNavigate();
   const [type, toggle] = useToggle(["login", "register"]);
 
@@ -35,6 +37,30 @@ export function Login() {
           : null,
     },
   });
+
+  const handleLoginSuccess = async (response: any) => {
+    // Extract the token from the response
+    const { tokenId } = response;
+
+    console.log('token', tokenId);
+
+
+    try {
+      // Send the token to the backend to get the JWT using axios
+      const res = await axios.get("api/auth/google", {
+        headers: {
+          Authorization: `Bearer ${tokenId}`,
+        },
+      });
+
+      // Store the JWT in localStorage or state
+      localStorage.setItem("token", res.data.token);
+      // Handle successful login
+      console.log("Login successful", res.data);
+    } catch (error) {
+      console.error("Login failed", error);
+    }
+  };
 
   const RegisterForm = useForm<Register>({
     initialValues: {
@@ -94,8 +120,13 @@ export function Login() {
       </Text>
 
       <Group grow mb="md" mt="md">
-        <GoogleButton radius="xl">Google</GoogleButton>
-        <TwitterButton radius="xl">Twitter</TwitterButton>
+        {/* <GoogleButton radius="xl">Google</GoogleButton> */}
+        <GoogleLogin
+          clientId={client_api}
+          buttonText="Login with Google"
+          onSuccess={handleLoginSuccess}
+          cookiePolicy="single_host_origin"
+        />
       </Group>
 
       <Divider label="Or continue with email" labelPosition="center" my="lg" />
@@ -158,16 +189,16 @@ export function Login() {
               type === "login"
                 ? LoginForm.setFieldValue("password", event.currentTarget.value)
                 : RegisterForm.setFieldValue(
-                    "password",
-                    event.currentTarget.value
-                  )
+                  "password",
+                  event.currentTarget.value
+                )
             }
             error={
               type === "login"
                 ? LoginForm.errors.password &&
-                  "Password should include at least 6 characters"
+                "Password should include at least 6 characters"
                 : RegisterForm.errors.password &&
-                  "Password should include at least 6 characters"
+                "Password should include at least 6 characters"
             }
             radius="md"
           />
