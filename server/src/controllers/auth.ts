@@ -24,7 +24,7 @@ export class AuthController {
     res: Response,
     next: NextFunction
   ) => {
-    passport.authenticate("google", { session: false }, async (err, user) => {
+    passport.authenticate("google", { session: false, failureMessage: true }, async (err, user) => {
       if (err || !user) {
         return res.status(401).json({ message: "Authentication failed" });
       }
@@ -42,7 +42,9 @@ export class AuthController {
         maxAge: 3600000, // 1 hour expiration
       });
 
-      res.json({ message: "Authentication successful", token });
+      // res.json({ message: "Authentication successful", token });
+
+      res.redirect("http://localhost:4000");
     })(req, res, next);
   };
 

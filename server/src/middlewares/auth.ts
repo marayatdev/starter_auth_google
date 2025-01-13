@@ -6,13 +6,13 @@ interface AuthenticatedRequest extends Request {
 }
 
 const authenticateToken = (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    const token = req.cookies.token;
+    if (!token) {
         res.status(401).json({ message: "Token missing or invalid" });
         return;
     }
 
-    const token = authHeader.split(" ")[1];
+
     const jwtSecret = process.env.JWT_SECRET || 'default_secret';
 
     try {

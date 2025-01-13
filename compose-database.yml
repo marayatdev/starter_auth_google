@@ -5,7 +5,7 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: password # เปลี่ยนเป็นรหัสผ่านของ root ที่ปลอดภัย
-      MYSQL_DATABASE: server # เปลี่ยนเป็นชื่อฐานข้อมูลที่ต้องการ
+      MYSQL_DATABASE: su_yearbooks # เปลี่ยนเป็นชื่อฐานข้อมูลที่ต้องการ
       MYSQL_USER: user # เปลี่ยนเป็นชื่อผู้ใช้ที่ต้องการ
       MYSQL_PASSWORD: root # เปลี่ยนเป็นรหัสผ่านผู้ใช้ที่ปลอดภัย
     ports:

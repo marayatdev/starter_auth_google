@@ -42,8 +42,7 @@ export function Login() {
     // Extract the token from the response
     const { tokenId } = response;
 
-    console.log('token', tokenId);
-
+    console.log("token", tokenId);
 
     try {
       // Send the token to the backend to get the JWT using axios
@@ -120,13 +119,14 @@ export function Login() {
       </Text>
 
       <Group grow mb="md" mt="md">
-        {/* <GoogleButton radius="xl">Google</GoogleButton> */}
-        <GoogleLogin
-          clientId={client_api}
-          buttonText="Login with Google"
-          onSuccess={handleLoginSuccess}
-          cookiePolicy="single_host_origin"
-        />
+        <GoogleButton
+          radius="xl"
+          onClick={() => {
+            window.location.href = "http://localhost:8000/api/auth/google";
+          }}
+        >
+          Google
+        </GoogleButton>
       </Group>
 
       <Divider label="Or continue with email" labelPosition="center" my="lg" />
@@ -189,16 +189,16 @@ export function Login() {
               type === "login"
                 ? LoginForm.setFieldValue("password", event.currentTarget.value)
                 : RegisterForm.setFieldValue(
-                  "password",
-                  event.currentTarget.value
-                )
+                    "password",
+                    event.currentTarget.value
+                  )
             }
             error={
               type === "login"
                 ? LoginForm.errors.password &&
-                "Password should include at least 6 characters"
+                  "Password should include at least 6 characters"
                 : RegisterForm.errors.password &&
-                "Password should include at least 6 characters"
+                  "Password should include at least 6 characters"
             }
             radius="md"
           />
