@@ -37,12 +37,11 @@ export class AuthController {
       );
 
       res.cookie("token", token, {
-        httpOnly: true, // Prevents JavaScript from accessing the cookie
-        secure: process.env.NODE_ENV === "production", // Only use cookies over HTTPS in production
-        maxAge: 3600000, // 1 hour expiration
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 3600000,
       });
 
-      // res.json({ message: "Authentication successful", token });
 
       res.redirect("http://localhost:4000");
     })(req, res, next);
