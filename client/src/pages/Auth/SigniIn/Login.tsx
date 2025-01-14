@@ -10,6 +10,7 @@ import {
   Divider,
   Anchor,
   Stack,
+  Flex,
 } from "@mantine/core";
 import { GoogleButton } from "../LogoSignIn/GoogleButton";
 import { login, register } from "../../../services/Auth/auth";
@@ -17,10 +18,9 @@ import { useNavigate } from "react-router-dom";
 import type { Login, Register } from "../../../interfaces/Auth/auth";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
-import { GoogleLogin } from "react-google-login";
+import { useEffect } from "react";
 
 export function Login() {
-  const client_api = import.meta.env.VITE_GOOGLE_CLIENT_ID;
   const navigate = useNavigate();
   const [type, toggle] = useToggle(["login", "register"]);
 
@@ -38,34 +38,11 @@ export function Login() {
     },
   });
 
-  const handleLoginSuccess = async (response: any) => {
-    // Extract the token from the response
-    const { tokenId } = response;
-
-    console.log("token", tokenId);
-
-    try {
-      // Send the token to the backend to get the JWT using axios
-      const res = await axios.get("api/auth/google", {
-        headers: {
-          Authorization: `Bearer ${tokenId}`,
-        },
-      });
-
-      // Store the JWT in localStorage or state
-      localStorage.setItem("token", res.data.token);
-      // Handle successful login
-      console.log("Login successful", res.data);
-    } catch (error) {
-      console.error("Login failed", error);
-    }
-  };
-
   const RegisterForm = useForm<Register>({
     initialValues: {
-      username: "Jengs",
-      email: "test1@gmail.com",
-      password: "test",
+      username: "admin Jengs marayat ",
+      email: "admin@gmail.com",
+      password: "",
     },
     validate: {
       username: (val) =>
@@ -106,10 +83,16 @@ export function Login() {
     }
   };
 
+  let clickCount = 0;
+
   const toggleType = () => {
-    toggle();
-    LoginForm.reset();
-    RegisterForm.reset();
+    clickCount += 1;
+    if (clickCount === 3) {
+      toggle();
+      LoginForm.reset();
+      RegisterForm.reset();
+      clickCount = 0;
+    }
   };
 
   return (
@@ -128,8 +111,21 @@ export function Login() {
           Google
         </GoogleButton>
       </Group>
+      <Divider
+        label="Or continue with email"
+        onClick={toggleType}
+        labelPosition="center"
+        my="lg"
+      />
 
-      <Divider label="Or continue with email" labelPosition="center" my="lg" />
+      <Flex justify="center" align="center">
+        {type === "register" && (
+          <Text fz={"h1"} c={"red"}>
+            {" "}
+            Admin Register
+          </Text>
+        )}
+      </Flex>
 
       <form
         onSubmit={
@@ -212,9 +208,9 @@ export function Login() {
             onClick={toggleType}
             size="xs"
           >
-            {type === "register"
+            {/* {type === "register"
               ? "Already have an account? Login"
-              : "Don't have an account? Register"}
+              : "Don't have an account? Register"} */}
           </Anchor>
           <Button type="submit" radius="xl">
             {upperFirst(type)}

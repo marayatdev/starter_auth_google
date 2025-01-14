@@ -15,6 +15,7 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
+        // console.log(profile?.emails?.[0]?.value);
         const user = await authService.findOrCreateUser(profile);
         return done(null, user);
       } catch (error) {

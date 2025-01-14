@@ -13,12 +13,10 @@ export class AuthController {
     this.jwtSecret = process.env.JWT_SECRET || "default_secret";
   }
 
-  // Redirect user to Google login
   public googleAuth = passport.authenticate("google", {
     scope: ["profile", "email"],
   });
 
-  // Handle the callback from Google
   public googleAuthCallback = (
     req: Request,
     res: Response,
@@ -29,11 +27,10 @@ export class AuthController {
         return res.status(401).json({ message: "Authentication failed" });
       }
 
-      // Generate a JWT token
       const token = jwt.sign(
         { id: user.id, email: user.email, role: user.role },
         this.jwtSecret,
-        { expiresIn: "1h" }
+        { expiresIn: "1m" }
       );
 
       res.cookie("token", token, {
@@ -42,12 +39,31 @@ export class AuthController {
         maxAge: 3600000,
       });
 
-
       res.redirect("http://localhost:4000");
     })(req, res, next);
   };
 
-  // Endpoint to verify JWT (example)
+  public logout = (req: Request, res: Response) => {
+    res.clearCookie("token");
+    res.redirect("http://localhost:4000");
+  };
+
+
+  public checkToken = (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const token = req.cookies.token;
+      if (!token) {
+        res.status(401).json({ message: "Token not provided" });
+      }
+      res.status(200).json({ message: "Token valid" });
+    } catch (err) {
+      res.status(401).json({ message: "Token invalid" });
+    } finally {
+      next();
+    }
+  }
+
+
   public verifyToken = (req: Request, res: Response) => {
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) {

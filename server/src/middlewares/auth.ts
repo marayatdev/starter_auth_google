@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
 interface AuthenticatedRequest extends Request {
-    user?: { userId: string; username: string; role: string };
+    user?: { id: string; email: string; role: string };
 }
 
 const authenticateToken = (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
@@ -17,7 +17,7 @@ const authenticateToken = (req: AuthenticatedRequest, res: Response, next: NextF
 
     try {
         const decodedToken = jwt.verify(token, jwtSecret) as jwt.JwtPayload;
-        req.user = { userId: decodedToken.userId, username: decodedToken.username, role: decodedToken.role };
+        req.user = { id: decodedToken.id, email: decodedToken.email, role: decodedToken.role };
         next();
     } catch (error) {
         res.status(403).json({ message: "Invalid or expired token" });

@@ -1,19 +1,44 @@
 import { Button } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
-import SigOut from "../../components/Button/LogOut/SigOut";
-
+import { googleLogout } from "@react-oauth/google";
+import axios from "axios";
 const Home = () => {
-
-  const isAuth = localStorage.getItem("isAuth");
   const navigate = useNavigate();
 
-  return <>Home Page
+  const handleLogout = () => {
+    try {
+      axios.get("/api/auth/logout");
+      googleLogout();
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
 
+  const checkToken = async () => {
+    try {
+      const response = await axios.get("/api/auth/check");
+      console.log(response.data);
+    } catch (error) {
+      console.error("Check token error:", error);
+    }
+  };
 
-  {isAuth ? <SigOut /> : <Button onClick={() => navigate("/login")}>Login</Button>}
-    
-  </>;
-
+  return (
+    <>
+      Home Page
+      <Button onClick={() => navigate("/login")}>Login</Button>
+      <Button
+        onClick={handleLogout}
+        color="red"
+        variant="filled"
+        radius="md"
+        size="md"
+      >
+        Sign Out
+      </Button>
+      <Button onClick={checkToken}>check</Button>
+    </>
+  );
 };
 
 export default Home;
