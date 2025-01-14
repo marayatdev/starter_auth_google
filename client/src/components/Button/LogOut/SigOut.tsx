@@ -1,12 +1,14 @@
 import { Button } from "@mantine/core";
-import { logout } from "../../../services/Auth/auth";
+import axios from "axios";
+import { googleLogout } from "@react-oauth/google";
 
 export default function SigOut() {
-  const handleLogout = async () => {
+  const handleLogout = () => {
     try {
-      await logout();
+      axios.get("/api/auth/logout");
+      googleLogout();
     } catch (error) {
-      console.log(error);
+      console.error("Logout error:", error);
     }
   };
 

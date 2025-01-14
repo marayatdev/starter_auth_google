@@ -1,18 +1,10 @@
 import { Button } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
-import { googleLogout } from "@react-oauth/google";
 import axios from "axios";
+import SigOut from "../../components/Button/LogOut/SigOut";
+import DefaultStyle from "../../components/ui@system/DefaultStyle";
 const Home = () => {
   const navigate = useNavigate();
-
-  const handleLogout = () => {
-    try {
-      axios.get("/api/auth/logout");
-      googleLogout();
-    } catch (error) {
-      console.error("Logout error:", error);
-    }
-  };
 
   const checkToken = async () => {
     try {
@@ -32,21 +24,13 @@ const Home = () => {
   };
 
   return (
-    <>
+    <DefaultStyle>
       Home Page
       <Button onClick={() => navigate("/login")}>Login</Button>
-      <Button
-        onClick={handleLogout}
-        color="red"
-        variant="filled"
-        radius="md"
-        size="md"
-      >
-        Sign Out
-      </Button>
+      <SigOut />
       <Button onClick={checkToken}>check</Button>
       <Button onClick={checkme}>getMe</Button>
-    </>
+    </DefaultStyle>
   );
 };
 
