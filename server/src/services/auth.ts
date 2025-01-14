@@ -40,4 +40,10 @@ export class AuthService {
       where: { id },
     });
   }
+
+  public async getUserById(id: number): Promise<User | null> {
+    return this.prisma.user.findUnique({
+      where: { id },
+    });
+  }
 }

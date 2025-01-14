@@ -30,7 +30,7 @@ export class AuthController {
       const token = jwt.sign(
         { id: user.id, email: user.email, role: user.role },
         this.jwtSecret,
-        { expiresIn: "1m" }
+        { expiresIn: "1h" }
       );
 
       res.cookie("token", token, {
@@ -52,6 +52,8 @@ export class AuthController {
   public checkToken = (req: Request, res: Response, next: NextFunction) => {
     try {
       const token = req.cookies.token;
+      console.log('token', token);
+
       if (!token) {
         res.status(401).json({ message: "Token not provided" });
       }
@@ -75,6 +77,26 @@ export class AuthController {
       res.json({ message: "Token valid", payload });
     } catch (err) {
       res.status(401).json({ message: "Token invalid" });
+    }
+  };
+
+  public getUserMe = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      // const authHeader = req.cookies.token;
+
+      // console.log('authHeader', authHeader);
+
+      // const token = authHeader.split(" ")[1];
+
+      // const decodedToken = jwt.verify(token, this.jwtSecret) as jwt.JwtPayload;
+      const user = await this.authService.getUserById(18);
+      if (!user) {
+        res.status(404).json({ message: "User not found" });
+        return;
+      }
+      res.status(200).json(user);
+    } catch (error) {
+      next(error);
     }
   };
 }

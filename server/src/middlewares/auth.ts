@@ -1,28 +1,22 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import cookieParser from "cookie-parser"
 
-interface AuthenticatedRequest extends Request {
-    user?: { id: string; email: string; role: string };
-}
+const secretKey = "your_jwt_secret";
 
-const authenticateToken = (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
+export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const token = req.cookies.token;
+
     if (!token) {
-        res.status(401).json({ message: "Token missing or invalid" });
-        return;
+        return res.status(401).json({ message: "Token not provided" });
     }
-
-
-    const jwtSecret = process.env.JWT_SECRET || 'default_secret';
 
     try {
-        const decodedToken = jwt.verify(token, jwtSecret) as jwt.JwtPayload;
-        req.user = { id: decodedToken.id, email: decodedToken.email, role: decodedToken.role };
+        const decoded = jwt.verify(token, secretKey);
+
+        req.user = decoded;
         next();
-    } catch (error) {
-        res.status(403).json({ message: "Invalid or expired token" });
-        return;
+    } catch (err) {
+        return res.status(401).json({ message: "Token is invalid or expired" });
     }
 };
-
-export default authenticateToken;

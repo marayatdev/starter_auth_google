@@ -10,6 +10,7 @@ import prisma from "./config/prisma";
 import passport from "passport"; // Import Passport
 import session from "express-session"; // For session handling
 import "./config/passport"; // Import Passport configuration
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
@@ -34,6 +35,7 @@ class App {
     this.app.use(morgan("dev"));
     this.app.use(cors({ origin: "*" }));
     this.app.use(bodyParser.json());
+    this.app.use(cookieParser());
     this.app.use(bodyParser.urlencoded({ extended: true }));
     this.app.use(
       session({
