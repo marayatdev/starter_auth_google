@@ -2,7 +2,7 @@
 
 This repository is a full-stack starter project for implementing authentication with role-based access control. It includes a **Node.js** server with **TypeScript**, **Prisma**, **Argon2** for password hashing, and **JWT** for token-based authentication. The project is Dockerized with **Docker Compose** to set up a **MySQL** database. The client side is built with **React**, featuring login, registration, protected routes based on roles, and navigation handling.
 
-## Table of Contentsxxxxx
+## Table of Contents
 
 - [Features](#features)
 - [Prerequisites](#prerequisites)
