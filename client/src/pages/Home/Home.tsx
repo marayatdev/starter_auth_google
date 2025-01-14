@@ -22,6 +22,14 @@ const Home = () => {
       console.error("Check token error:", error);
     }
   };
+  const checkme = async () => {
+    try {
+      const response = await axios.get("/api/auth/me");
+      console.log(response.data);
+    } catch (error) {
+      console.error("Check token error:", error);
+    }
+  };
 
   return (
     <>
@@ -37,6 +45,7 @@ const Home = () => {
         Sign Out
       </Button>
       <Button onClick={checkToken}>check</Button>
+      <Button onClick={checkme}>getMe</Button>
     </>
   );
 };

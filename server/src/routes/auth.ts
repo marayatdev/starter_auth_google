@@ -1,5 +1,6 @@
 import { Router, Request, Response } from "express";
 import { AuthController } from "../controllers/auth";
+import { authMiddleware } from "../middlewares/authMiddleware";
 export class AuthRoutes {
   public router: Router = Router();
 
@@ -14,7 +15,7 @@ export class AuthRoutes {
     this.router.get(`/google/callback`, this.authController.googleAuthCallback);
     this.router.get(`/logout`, this.authController.logout);
     this.router.get(`/check`, this.authController.checkToken);
-    this.router.get(`/me`, this.authController.getUserMe);
+    this.router.get(`/me`, authMiddleware, this.authController.getUserMe);
   }
 }
 

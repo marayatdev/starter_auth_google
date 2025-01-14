@@ -3,7 +3,7 @@
 import { NextFunction, Request, Response } from "express";
 import passport from "passport";
 import { AuthService } from "../services/auth";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 export class AuthController {
   private authService = new AuthService();
@@ -82,19 +82,29 @@ export class AuthController {
 
   public getUserMe = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      // const authHeader = req.cookies.token;
+      const token = req.cookies.token;
 
-      // console.log('authHeader', authHeader);
+      console.log('token', token);
 
-      // const token = authHeader.split(" ")[1];
 
-      // const decodedToken = jwt.verify(token, this.jwtSecret) as jwt.JwtPayload;
-      const user = await this.authService.getUserById(18);
-      if (!user) {
-        res.status(404).json({ message: "User not found" });
-        return;
+      if (!token) {
+        res.status(401).json({ message: 'Authentication required' });
       }
-      res.status(200).json(user);
+
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'default_secret') as JwtPayload;
+
+      const user = await this.authService.findUserById(Number(decoded.id));
+
+      if (!user) {
+        res.status(404).json({ message: 'User not found' });
+      }
+
+      res.status(200).json({
+        id: user?.id,
+        email: user?.email,
+        role: user?.role,
+        name: user?.name
+      });
     } catch (error) {
       next(error);
     }
