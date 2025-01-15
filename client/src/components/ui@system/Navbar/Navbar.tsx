@@ -10,9 +10,9 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import classes from "./Navbar.module.css";
-import SigOut from "../../Button/LogOut/SigOut";
 import { User } from "../../../interfaces/Auth/auth";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../../../contexts/UserContext";
 import axios from "axios";
 
 export interface UserMe {
@@ -26,13 +26,14 @@ export function Navbar() {
   const [opened, { toggle }] = useDisclosure(false);
 
   const [data, setData] = useState<User>();
+  const user: User | null = useUser();
 
   const navigate = useNavigate();
 
   const getUserInfo = async () => {
     try {
       const response = await axios.get("/api/auth/me");
-      console.log(response.data);
+      // console.log(response.data);
       setData(response.data);
     } catch (error) {
       console.error("Error fetching user data:", error);
@@ -99,7 +100,7 @@ export function Navbar() {
           style={{ cursor: "pointer" }}
           onClick={() => navigate("/")}
         >
-          YearBooks
+          YearBooks {user}
         </Text>
         <Paper
           bg={"#fedbe4"}
@@ -114,6 +115,7 @@ export function Navbar() {
         </Paper>
 
         <Group gap={5} visibleFrom="xs">
+          {/* {user.email} */}
           {/* {isAuth ? (
             <>
               {data?.username}

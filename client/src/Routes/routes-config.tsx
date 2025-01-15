@@ -1,7 +1,8 @@
 // import Home from "../pages/Home/Home";
 import AdminDashboard from "../pages/Admin/Dashboard";
-import UserPage from "../pages/Users/UserPage";
 import { Login } from "../pages/Auth/SigniIn/Login";
+import Home from "../pages/Home/Home";
+import RegisterStudent from "../pages/Users/RegisterStudent";
 
 export default [
   {
@@ -10,7 +11,12 @@ export default [
   },
   {
     path: "/users",
-    element: UserPage,
+    element: Home,
+    requireRoles: [1],
+  },
+  {
+    path: "/regis_student",
+    element: RegisterStudent,
     requireRoles: [1],
   },
   {

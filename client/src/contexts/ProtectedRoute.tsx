@@ -1,21 +1,44 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 interface ProtectedRouteProps {
   children?: React.ReactNode;
   requireRoles?: number[];
 }
 
-const ProtectedRoute = ({ children, requireRoles = [] }: ProtectedRouteProps) => {
-  const token = localStorage.getItem("accessToken");
-  const isAuthen = !!token;
+const ProtectedRoute = ({
+  children,
+  requireRoles = [],
+}: ProtectedRouteProps) => {
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  if (!isAuthen) {
+  useEffect(() => {
+    const getUserInfo = async () => {
+      try {
+        const response = await axios.get("/api/auth/me");
+        setData(response.data);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getUserInfo();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!data) {
     return <Navigate to="/" replace />;
   }
 
-  const decodedToken: { role?: number } = jwtDecode(token || "");
-  const matchRoles = !requireRoles.length || requireRoles.includes(Number(decodedToken.role)!);
+  const matchRoles =
+    !requireRoles.length || requireRoles.includes(Number(data.role));
 
   if (!matchRoles) {
     return <Navigate to="/404" replace />;
@@ -28,11 +51,30 @@ export default ProtectedRoute;
 
 // PublicRoute component to handle pages like /login for unauthenticated users only
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
-  const token = localStorage.getItem("accessToken");
-  const isAuthen = !!token;
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  if (isAuthen) {
-    return <Navigate to="/" replace />; // Redirect to home if already authenticated
+  useEffect(() => {
+    const getUserInfo = async () => {
+      try {
+        const response = await axios.get("/api/auth/me");
+        setData(response.data);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getUserInfo();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (data) {
+    return <Navigate to="/" replace />;
   }
 
   return children ? children : <Outlet />;

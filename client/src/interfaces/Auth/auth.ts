@@ -11,9 +11,8 @@ export interface Register {
 
 
 export interface User {
-    id: number
-    username: string
-    email: string
-    password: string
-    role: string
+    id?: number
+    name?: string
+    email?: string
+    role?: string
 }

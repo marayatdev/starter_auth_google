@@ -52,7 +52,6 @@ export class AuthController {
   public checkToken = (req: Request, res: Response, next: NextFunction) => {
     try {
       const token = req.cookies.token;
-      console.log('token', token);
 
       if (!token) {
         res.status(401).json({ message: "Token not provided" });
@@ -84,7 +83,6 @@ export class AuthController {
     try {
       const token = req.cookies.token;
 
-      console.log('token', token);
 
 
       if (!token) {
@@ -103,7 +101,9 @@ export class AuthController {
         id: user?.id,
         email: user?.email,
         role: user?.role,
-        name: user?.name
+        prefix: user?.prefix,
+        f_name: user?.f_name,
+        l_name: user?.l_name,
       });
     } catch (error) {
       next(error);

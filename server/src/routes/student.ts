@@ -10,7 +10,7 @@ export class StudentRoutes {
   }
 
   private initializeRoutes() {
-    this.router.post(`/create`, this.studentController.createStudent);
+    this.router.put(`/create`, this.studentController.createStudent);
     this.router.get(`/list`, this.studentController.listStudent);
 
   }
